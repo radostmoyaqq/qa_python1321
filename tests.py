@@ -45,22 +45,24 @@ class TestBooksCollector:
 
         assert collector.get_book_genre('Dune') == genre
 
-    @pytest.mark.parametrize(
-        'book_name, genre, expected_genre',
-        [
-            ('Unknown book', 0, None),
-            ('Dune', 'Unknown genre', ''),
-        ],
-    )
-    def test_set_book_genre_invalid_book_or_genre_does_not_set_genre(
-            self, book_name, genre, expected_genre):
+    def test_set_book_genre_for_unknown_book_returns_none(self):
         collector = BooksCollector()
+        genre = collector.genre[0]
+
+        # Пытаемся установить жанр книге, которой нет в коллекции
+        collector.set_book_genre('Unknown book', genre)
+
+        assert collector.get_book_genre('Unknown book') is None
+
+    def test_set_book_genre_unknown_genre_does_not_set(self):
+        collector = BooksCollector()
+
         collector.add_new_book('Dune')
-        genre = collector.genre[0] if genre == 0 else genre
+        # Пытаемся установить несуществующий в списке допустимых жанр
+        collector.set_book_genre('Dune', 'Unknown genre')
 
-        collector.set_book_genre(book_name, genre)
-
-        assert collector.get_book_genre(book_name) == expected_genre
+        # Жанр должен остаться пустым, как при создании книги
+        assert collector.get_book_genre('Dune') == ''
 
     def test_get_books_with_specific_genre_returns_books_with_genre(self):
         collector = BooksCollector()
